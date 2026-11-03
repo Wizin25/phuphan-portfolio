@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Layout, Server, Database, Wrench, Sparkles } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { Tilt, TiltContent } from '@animate-ui/react/primitives/effects/tilt';
 
 export default function Skills({ skills, t }) {
   const [activeTab, setActiveTab] = useState('frontend');
@@ -14,7 +16,7 @@ export default function Skills({ skills, t }) {
   const currentSkills = skills?.[activeTab] || [];
 
   return (
-    <section id="skills" className="py-20 relative border-t dark:border-slate-900 border-slate-200 dark:bg-[#0a0d14] bg-white">
+    <section id="skills" className="py-20 relative border-t dark:border-slate-900 border-slate-200 dark:bg-[#101010]/30 bg-white/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <span className="text-xs font-mono font-semibold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 dark:bg-indigo-500/10 bg-indigo-50 px-3 py-1 rounded-full border dark:border-indigo-500/20 border-indigo-200">
@@ -37,14 +39,11 @@ export default function Skills({ skills, t }) {
               <button
                 key={cat.key}
                 onClick={() => setActiveTab(cat.key)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 scale-105'
-                    : 'dark:bg-slate-900/80 bg-slate-100 dark:text-slate-300 text-slate-700 hover:text-indigo-600 dark:hover:text-white dark:hover:bg-slate-800 hover:bg-slate-200 border dark:border-slate-800 border-slate-200'
-                }`}
+                className={`relative isolate flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors ${isActive ? 'border-transparent text-white' : 'dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300 border-slate-200 bg-slate-100/80 text-slate-700 hover:text-indigo-600'}`}
               >
-                <Icon className="w-4 h-4" />
-                <span>{cat.label}</span>
+                {isActive && <motion.span layoutId="skills-active-pill" className="absolute inset-0 -z-10 rounded-xl bg-indigo-600 shadow-lg shadow-indigo-600/25" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
+                <Icon className="relative z-10 w-4 h-4" />
+                <span className="relative z-10">{cat.label}</span>
               </button>
             );
           })}
@@ -52,13 +51,11 @@ export default function Skills({ skills, t }) {
 
         {/* Skills Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <AnimatePresence mode="popLayout" initial={false}>
           {currentSkills.map((skill, index) => (
-            <div
-              key={index}
-              className={`p-5 rounded-2xl glass-card transition-all duration-300 hover:border-indigo-500/50 relative overflow-hidden group ${
-                skill.highlight ? 'ring-1 ring-indigo-500/30' : ''
-              }`}
-            >
+            <motion.div key={skill.name} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.22 }}>
+            <Tilt maxTilt={5} perspective={900} className="h-full">
+            <TiltContent className={`h-full p-4 rounded-2xl glass-card transition-colors duration-300 hover:border-indigo-500/50 relative overflow-hidden group ${skill.highlight ? 'ring-1 ring-indigo-500/30' : ''}`}>
               {skill.highlight && (
                 <div className="absolute top-3 right-3 flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full dark:bg-indigo-500/20 bg-indigo-50 dark:text-indigo-300 text-indigo-700 border dark:border-indigo-500/30 border-indigo-200">
                   <Sparkles className="w-2.5 h-2.5" />
@@ -82,14 +79,19 @@ export default function Skills({ skills, t }) {
                   <span className="text-indigo-600 dark:text-indigo-400 font-bold">{skill.level}%</span>
                 </div>
                 <div className="w-full h-2 rounded-full dark:bg-slate-800/80 bg-slate-200 overflow-hidden">
-                  <div
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${skill.level}%` }}
+                    transition={{ duration: 0.65, delay: index * 0.04, ease: 'easeOut' }}
                     className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000 ease-out"
-                    style={{ width: `${skill.level}%` }}
-                  ></div>
+                  />
                 </div>
               </div>
-            </div>
+            </TiltContent>
+            </Tilt>
+            </motion.div>
           ))}
+          </AnimatePresence>
         </div>
       </div>
     </section>

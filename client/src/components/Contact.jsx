@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, MapPin, Github, Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { LiquidButton } from './animate-ui/buttons/liquid';
 
 export default function Contact({ profile, lang, t }) {
   const [formData, setFormData] = useState({
@@ -55,7 +56,7 @@ export default function Contact({ profile, lang, t }) {
   };
 
   return (
-    <section id="contact" className="py-20 relative border-t dark:border-slate-900 border-slate-200 dark:bg-[#0c101a]/50 bg-slate-100/50">
+    <section id="contact" className="py-20 relative border-t dark:border-slate-900 border-slate-200 dark:bg-[#101010]/30 bg-white/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <span className="text-xs font-mono font-semibold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 dark:bg-indigo-500/10 bg-indigo-50 px-3 py-1 rounded-full border dark:border-indigo-500/20 border-indigo-200">
@@ -72,7 +73,7 @@ export default function Contact({ profile, lang, t }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-5xl mx-auto">
           {/* Contact Details Cards */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="glass-card p-6 rounded-2xl space-y-6">
+            <div className="glass-card p-5 rounded-2xl space-y-5">
               <h3 className="text-xl font-bold dark:text-white text-slate-900 mb-4">{t.contact.cardTitle}</h3>
 
               <div className="flex items-start gap-4">
@@ -137,7 +138,7 @@ export default function Contact({ profile, lang, t }) {
 
           {/* Contact Form */}
           <div className="lg:col-span-7">
-            <form onSubmit={handleSubmit} className="glass-card p-8 rounded-2xl space-y-5">
+            <form onSubmit={handleSubmit} className="glass-card p-6 rounded-2xl space-y-4">
               {status && (
                 <div
                   className={`p-4 rounded-xl text-sm flex items-start gap-3 ${
@@ -216,10 +217,10 @@ export default function Contact({ profile, lang, t }) {
                 ></textarea>
               </div>
 
-              <button
+              <LiquidButton
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 disabled:opacity-50 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="h-12 w-full rounded-xl px-6 text-white shadow-lg shadow-indigo-600/25 [--liquid-button-background-color:#BAFF39] [--liquid-button-color:#6E6E6E]"
               >
                 {loading ? (
                   <>
@@ -232,7 +233,7 @@ export default function Contact({ profile, lang, t }) {
                     <span>{t.contact.sendBtn}</span>
                   </>
                 )}
-              </button>
+              </LiquidButton>
             </form>
           </div>
         </div>

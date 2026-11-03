@@ -1,18 +1,19 @@
 import React from 'react';
 import { Layers, Database, Zap, ShieldCheck, CheckCircle, Code2, Award, Sparkles, Terminal } from 'lucide-react';
+import { SlidingNumber } from '@animate-ui/react/primitives/texts/sliding-number';
 
 export default function About({ t }) {
   const icons = [Layers, Database, Zap, ShieldCheck];
 
   const stats = [
-    { value: '119+', label: 'Commits on SwapX', sublabel: 'Frontend Lead' },
-    { value: '6+', label: 'Real Projects', sublabel: 'Web, Mobile & ERP' },
-    { value: '100%', label: 'Clean Architecture', sublabel: 'N-Tier & Modularity' },
+    { value: 119, suffix: '+', label: 'Commits on SwapX', sublabel: 'Frontend Lead' },
+    { value: 6, suffix: '+', label: 'Real Projects', sublabel: 'Web, Mobile & ERP' },
+    { value: 100, suffix: '%', label: 'Clean Architecture', sublabel: 'N-Tier & Modularity' },
     { value: 'FPTU', label: 'Software Engineer', sublabel: 'Graduated 2025' }
   ];
 
   return (
-    <section id="about" className="py-20 relative border-t dark:border-slate-900 border-slate-200 dark:bg-[#0c101a]/50 bg-slate-100/60">
+    <section id="about" className="py-20 relative border-t dark:border-slate-900 border-slate-200 dark:bg-[#101010]/30 bg-white/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
@@ -33,10 +34,15 @@ export default function About({ t }) {
           {stats.map((s, idx) => (
             <div
               key={idx}
-              className="glass-card p-5 rounded-2xl text-center hover:-translate-y-1 transition-all duration-300"
+              className="glass-card p-4 rounded-2xl text-center hover:-translate-y-1 transition-all duration-300"
             >
-              <div className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-indigo-500 to-cyan-400 bg-clip-text text-transparent font-mono mb-1">
-                {s.value}
+              <div className="mb-1 flex items-baseline justify-center font-mono text-2xl font-extrabold text-indigo-500 sm:text-3xl dark:text-indigo-300">
+                {typeof s.value === 'number' ? (
+                  <>
+                    <SlidingNumber number={s.value} fromNumber={0} inView inViewOnce delay={idx * 0.12} />
+                    <span>{s.suffix}</span>
+                  </>
+                ) : s.value}
               </div>
               <div className="text-xs font-bold dark:text-white text-slate-900">{s.label}</div>
               <div className="text-[11px] font-mono dark:text-slate-500 text-slate-500">{s.sublabel}</div>
@@ -76,7 +82,7 @@ export default function About({ t }) {
               return (
                 <div
                   key={i}
-                  className="glass-card p-6 rounded-2xl hover:-translate-y-1 transition-all duration-300"
+                  className="glass-card p-5 rounded-2xl hover:-translate-y-1 transition-all duration-300"
                 >
                   <div className="w-12 h-12 rounded-xl dark:bg-indigo-600/20 bg-indigo-50 border dark:border-indigo-500/30 border-indigo-200 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-4">
                     <Icon className="w-6 h-6" />

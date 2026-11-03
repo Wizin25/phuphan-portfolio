@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { X, ExternalLink, Github, CheckCircle2 } from 'lucide-react';
+import { motion } from 'motion/react';
+import { LiquidButton } from './animate-ui/buttons/liquid';
 
 export default function ProjectModal({ project, onClose, lang, t }) {
   useEffect(() => {
@@ -19,9 +21,20 @@ export default function ProjectModal({ project, onClose, lang, t }) {
   const highlights = lang === 'vi' ? (project.highlightsVi || project.highlights) : (project.highlightsEn || project.highlights);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm animate-fadeIn">
-      <div 
-        className="relative w-full max-w-3xl dark:bg-[#0f1524] bg-white border dark:border-slate-700/80 border-slate-200 rounded-2xl shadow-2xl dark:shadow-black/80 max-h-[90vh] flex flex-col overflow-hidden text-slate-800 dark:text-slate-200"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={(event) => event.target === event.currentTarget && onClose()}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm sm:p-6"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 18, scale: 0.97, filter: 'blur(6px)' }}
+        animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+        exit={{ opacity: 0, y: 10, scale: 0.98, filter: 'blur(4px)' }}
+        transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+        className="relative w-full max-w-3xl dark:bg-[#1a1a1a] bg-white border dark:border-slate-700/80 border-slate-200 rounded-2xl shadow-2xl dark:shadow-black/80 max-h-[90vh] flex flex-col overflow-hidden text-slate-800 dark:text-slate-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -41,12 +54,13 @@ export default function ProjectModal({ project, onClose, lang, t }) {
               {title}
             </h3>
           </div>
-          <button
+          <LiquidButton
             onClick={onClose}
-            className="p-2 rounded-xl dark:bg-slate-800 bg-slate-200 dark:hover:bg-slate-700 hover:bg-slate-300 dark:text-slate-400 text-slate-600 dark:hover:text-white hover:text-slate-900 transition-colors"
+            className="h-9 w-9 rounded-xl p-0 text-slate-600 dark:text-slate-300 [--liquid-button-background-color:#e2e8f0] [--liquid-button-color:#6366f1] dark:[--liquid-button-background-color:#1e293b]"
+            aria-label="Close project details"
           >
             <X className="w-5 h-5" />
-          </button>
+          </LiquidButton>
         </div>
 
         {/* Modal Body */}
@@ -116,36 +130,38 @@ export default function ProjectModal({ project, onClose, lang, t }) {
         <div className="p-6 border-t dark:border-slate-800 border-slate-200 dark:bg-slate-900/60 bg-slate-50 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {project.github && (
+              <LiquidButton asChild className="h-9 rounded-xl border border-slate-300 px-4 text-xs font-semibold text-slate-800 dark:border-slate-700 dark:text-slate-200 [--liquid-button-background-color:#f1f5f9] [--liquid-button-color:#6366f1] dark:[--liquid-button-background-color:#1e293b]">
               <a
                 href={project.github}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl dark:bg-slate-800 bg-white hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-200 text-slate-800 text-xs font-semibold border dark:border-slate-700 border-slate-300 transition-all shadow-sm"
               >
                 <Github className="w-4 h-4" />
                 <span>{t.projects.modalRepo}</span>
               </a>
+              </LiquidButton>
             )}
             {project.liveDemo && (
+              <LiquidButton asChild className="h-9 rounded-xl px-4 text-xs font-semibold text-white [--liquid-button-background-color:#BAFF39] [--liquid-button-color:#6E6E6E]">
               <a
                 href={project.liveDemo}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/30 transition-all"
               >
                 <ExternalLink className="w-4 h-4" />
                 <span>{t.projects.modalLive}</span>
               </a>
+              </LiquidButton>
             )}
           </div>
-          <button
+          <LiquidButton
             onClick={onClose}
-            className="px-4 py-2 rounded-xl text-xs font-semibold dark:text-slate-400 text-slate-600 dark:hover:text-white hover:text-slate-900 cursor-pointer"
+            className="h-9 rounded-xl px-4 text-xs font-semibold text-slate-600 dark:text-slate-300 [--liquid-button-background-color:#e2e8f0] [--liquid-button-color:#6366f1] dark:[--liquid-button-background-color:#1e293b]"
           >
             {t.projects.modalClose}
-          </button>
+          </LiquidButton>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Github, Menu, X, Sun, Moon, Globe } from 'lucide-react';
+import { ShimmeringText } from '@animate-ui/react/primitives/texts/shimmering';
+import { ThemeToggler } from '@animate-ui/react/primitives/effects/theme-toggler';
+import { LiquidButton } from './animate-ui/buttons/liquid';
+import { AnimatePresence, motion } from 'motion/react';
 
-export default function Navbar({ serverStatus, lang, onToggleLang, theme, onToggleTheme, t }) {
+export default function Navbar({ serverStatus, lang, onToggleLang, theme, setTheme, t }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -24,7 +28,7 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, onTogg
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled 
-        ? 'dark:bg-[#0a0d14]/90 bg-white/90 backdrop-blur-md dark:border-slate-800/80 border-slate-200/80 shadow-lg dark:shadow-black/40 shadow-slate-200/50 py-3' 
+        ? 'dark:bg-[#101010]/90 bg-white/90 backdrop-blur-md dark:border-slate-800/80 border-slate-200/80 shadow-lg dark:shadow-black/40 shadow-slate-200/50 py-3' 
         : 'bg-transparent py-5'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,12 +43,16 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, onTogg
                   className="w-full h-full rounded-full object-cover object-[center_18%]"
                 />
               </div>
-              <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0a0d14]" title="Available for hire"></span>
+              <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#101010]" title="Available for hire"></span>
             </div>
             <div>
-              <span className="font-bold text-lg dark:text-white text-slate-900 tracking-tight flex items-center gap-1.5">
-                Phan Tấn Phú
-              </span>
+              <ShimmeringText
+                text="Phan Tấn Phú"
+                duration={3}
+                color={theme === 'dark' ? '#FFFFFF' : '#6E6E6E'}
+                shimmeringColor="#BAFF39"
+                className="flex items-center gap-1.5 text-lg font-bold tracking-tight"
+              />
               <span className="block text-xs font-mono text-indigo-500 dark:text-indigo-400 font-medium">Software Engineer</span>
             </div>
           </a>
@@ -65,29 +73,29 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, onTogg
           {/* Controls & Actions */}
           <div className="flex items-center gap-2.5 sm:gap-3">
             {/* Language Switcher (EN / VI) */}
-            <button
+            <LiquidButton
               onClick={onToggleLang}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl dark:bg-slate-800/80 bg-slate-100 hover:bg-indigo-50 dark:hover:bg-slate-700/80 border dark:border-slate-700/60 border-slate-200 text-xs font-mono font-bold dark:text-slate-200 text-slate-700 transition-all hover:scale-105 cursor-pointer shadow-sm"
+              className="h-9 rounded-xl border border-slate-200 px-3 text-xs font-mono font-bold text-slate-700 dark:border-slate-700/60 dark:text-slate-200 [--liquid-button-background-color:#f1f5f9] [--liquid-button-color:#6366f1] dark:[--liquid-button-background-color:#1e293b]"
               title="Switch Language (Chuyển đổi ngôn ngữ)"
             >
               <Globe className="w-3.5 h-3.5 text-indigo-500" />
               <span className={lang === 'en' ? 'text-indigo-500 font-extrabold' : 'text-slate-400'}>EN</span>
               <span className="text-slate-400">/</span>
               <span className={lang === 'vi' ? 'text-indigo-500 font-extrabold' : 'text-slate-400'}>VI</span>
-            </button>
+            </LiquidButton>
 
             {/* Dark / Light Mode Toggle Button */}
-            <button
-              onClick={onToggleTheme}
-              className="p-2 rounded-xl dark:bg-slate-800/80 bg-slate-100 hover:bg-indigo-50 dark:hover:bg-slate-700/80 border dark:border-slate-700/60 border-slate-200 dark:text-amber-300 text-indigo-600 transition-all hover:scale-105 cursor-pointer shadow-sm"
-              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            >
-              {theme === 'dark' ? (
-                <Sun className="w-4 h-4" />
-              ) : (
-                <Moon className="w-4 h-4" />
+            <ThemeToggler theme={theme} resolvedTheme={theme} setTheme={setTheme}>
+              {({ effective, toggleTheme }) => (
+                <LiquidButton
+                  onClick={() => toggleTheme(effective === 'dark' ? 'light' : 'dark')}
+                  className="h-9 w-9 rounded-xl border border-slate-200 p-0 text-indigo-600 dark:border-slate-700/60 dark:text-amber-300 [--liquid-button-background-color:#f1f5f9] [--liquid-button-color:#6366f1] dark:[--liquid-button-background-color:#1e293b]"
+                  aria-label={effective === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                >
+                  {effective === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                </LiquidButton>
               )}
-            </button>
+            </ThemeToggler>
 
             {/* GitHub */}
             <a
@@ -101,27 +109,39 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, onTogg
             </a>
 
             {/* Contact CTA */}
+            <LiquidButton
+              asChild
+              className="hidden md:inline-flex h-9 rounded-xl px-4 text-xs font-semibold text-white shadow-md shadow-indigo-600/30 [--liquid-button-background-color:#BAFF39] [--liquid-button-color:#6E6E6E]"
+            >
             <a
               href="#contact"
-              className="hidden md:inline-flex px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white text-xs font-semibold shadow-md shadow-indigo-600/30 hover:shadow-indigo-600/50 transition-all hover:scale-[1.02]"
             >
               {t.nav.contactMe}
             </a>
+            </LiquidButton>
 
             {/* Mobile Menu Button */}
-            <button
+            <LiquidButton
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl dark:bg-slate-800 bg-slate-100 text-slate-700 dark:text-slate-300"
+              className="h-9 w-9 rounded-xl p-0 text-slate-700 dark:text-slate-300 lg:hidden [--liquid-button-background-color:#f1f5f9] [--liquid-button-color:#6366f1] dark:[--liquid-button-background-color:#1e293b]"
+              aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
+            </LiquidButton>
           </div>
         </div>
       </div>
 
       {/* Mobile Drawer */}
+      <AnimatePresence initial={false}>
       {mobileMenuOpen && (
-        <div className="lg:hidden dark:bg-[#0e1422] bg-white border-b dark:border-slate-800 border-slate-200 px-6 py-6 space-y-4 shadow-xl">
+        <motion.div
+          initial={{ opacity: 0, height: 0, y: -8 }}
+          animate={{ opacity: 1, height: 'auto', y: 0 }}
+          exit={{ opacity: 0, height: 0, y: -8 }}
+          transition={{ duration: 0.22, ease: 'easeOut' }}
+          className="lg:hidden dark:bg-[#101010] bg-white border-b dark:border-slate-800 border-slate-200 px-6 py-6 space-y-4 shadow-xl overflow-hidden"
+        >
           {navLinks.map((link) => (
             <a
               key={link.name}
@@ -142,16 +162,18 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, onTogg
               <Github className="w-4 h-4" />
               <span>@Wizin25</span>
             </a>
+            <LiquidButton asChild className="h-8 rounded-lg px-4 text-xs font-semibold text-white [--liquid-button-background-color:#BAFF39] [--liquid-button-color:#6E6E6E]">
             <a
               href="#contact"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-4 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold"
             >
               {t.nav.contactMe}
             </a>
+            </LiquidButton>
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </header>
   );
 }

@@ -9,6 +9,8 @@ import Experience from './components/Experience';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import { portfolioData } from './data/portfolioData';
+import { GlyphBackground } from './components/animate-ui/backgrounds/glyph';
+import { AnimatePresence } from 'motion/react';
 
 export default function App() {
   const [portfolio, setPortfolio] = useState(portfolioData);
@@ -41,10 +43,6 @@ export default function App() {
     localStorage.setItem('phu_portfolio_lang', lang);
   }, [lang]);
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
-
   const toggleLang = () => {
     setLang((prev) => (prev === 'en' ? 'vi' : 'en'));
   };
@@ -69,13 +67,21 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen dark:bg-[#0a0d14] bg-slate-50 text-slate-800 dark:text-slate-100 flex flex-col justify-between transition-colors duration-300">
+    <div className="relative isolate min-h-screen">
+      <GlyphBackground
+        className="pointer-events-none fixed inset-0 z-0 bg-white text-indigo-400 dark:bg-[#101010] dark:text-indigo-300"
+        glowColor="#BAFF39"
+        shapeColor="#BAFF39"
+        fontSize={14}
+        interactive
+      />
+      <div className="relative z-10 flex min-h-screen flex-col justify-between text-slate-800 transition-colors duration-300 dark:text-white">
       <Navbar 
         serverStatus={serverOnline}
         lang={lang}
         onToggleLang={toggleLang}
         theme={theme}
-        onToggleTheme={toggleTheme}
+        setTheme={setTheme}
         t={t}
       />
 
@@ -115,14 +121,18 @@ export default function App() {
       />
 
       {/* Project Details Modal */}
-      {selectedProject && (
-        <ProjectModal
-          project={selectedProject}
-          onClose={() => setSelectedProject(null)}
-          lang={lang}
-          t={t}
-        />
-      )}
+      <AnimatePresence mode="wait">
+        {selectedProject && (
+          <ProjectModal
+            key={selectedProject.id}
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+            lang={lang}
+            t={t}
+          />
+        )}
+      </AnimatePresence>
+      </div>
     </div>
   );
 }

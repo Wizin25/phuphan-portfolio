@@ -1,5 +1,6 @@
 import React from 'react';
 import { Terminal, Github, Mail, ArrowUp } from 'lucide-react';
+import { LiquidButton } from './animate-ui/buttons/liquid';
 
 export default function Footer({ profile, t }) {
   const scrollToTop = () => {
@@ -7,7 +8,7 @@ export default function Footer({ profile, t }) {
   };
 
   return (
-    <footer className="py-12 border-t dark:border-slate-900 border-slate-200 dark:bg-[#07090e] bg-slate-50 dark:text-slate-400 text-slate-600 text-xs transition-colors">
+    <footer className="py-12 border-t dark:border-slate-900 border-slate-200 dark:bg-[#101010]/60 bg-white/80 dark:text-slate-400 text-slate-600 text-xs transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
@@ -39,13 +40,13 @@ export default function Footer({ profile, t }) {
             >
               <Mail className="w-4 h-4" />
             </a>
-            <button
+            <LiquidButton
               onClick={scrollToTop}
-              className="p-2 rounded-lg dark:bg-indigo-600/20 bg-indigo-50 hover:bg-indigo-600 dark:hover:bg-indigo-600 dark:text-indigo-400 text-indigo-600 hover:text-white dark:hover:text-white transition-colors cursor-pointer border dark:border-indigo-500/30 border-indigo-200"
+              className="h-9 w-9 rounded-lg border border-indigo-200 p-0 text-indigo-600 dark:border-indigo-500/30 dark:text-indigo-300 [--liquid-button-background-color:#eef2ff] [--liquid-button-color:#4f46e5] dark:[--liquid-button-background-color:#312e81]"
               title="Back to Top"
             >
               <ArrowUp className="w-4 h-4" />
-            </button>
+            </LiquidButton>
           </div>
         </div>
 

@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ArrowRight, Github, Mail, Sparkles, MapPin, Check, Copy, Terminal, Shield, Zap, Award } from 'lucide-react';
+import { HighlightText } from '@animate-ui/react/primitives/texts/highlight';
+import { MorphingText } from '@animate-ui/react/primitives/texts/morphing';
+import { LiquidButton } from './animate-ui/buttons/liquid';
 
 export default function Hero({ profile, lang, t }) {
-  const [roleIndex, setRoleIndex] = useState(0);
   const [copied, setCopied] = useState(false);
 
   const rolesEn = [
@@ -20,13 +22,6 @@ export default function Hero({ profile, lang, t }) {
   ];
 
   const currentRoles = lang === 'vi' ? rolesVi : rolesEn;
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRoleIndex((prev) => (prev + 1) % currentRoles.length);
-    }, 2800);
-    return () => clearInterval(interval);
-  }, [currentRoles.length]);
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(profile.emailPrimary);
@@ -71,18 +66,23 @@ export default function Hero({ profile, lang, t }) {
             <div>
               <h1 className="text-4xl sm:text-6xl font-extrabold dark:text-white text-slate-900 tracking-tight leading-[1.12]">
                 {t.hero.titlePrefix}{" "}
-                <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent">
-                  {t.hero.titleHighlight}
-                </span>{" "}
+                <HighlightText
+                  text={t.hero.titleHighlight}
+                  inView
+                  className="rounded-md bg-indigo-500/20 px-2 text-indigo-700 dark:text-indigo-200"
+                />{" "}
                 {t.hero.titleSuffix}
               </h1>
 
               {/* Dynamic Role Rotator */}
-              <div className="mt-3 flex items-center gap-2 text-lg sm:text-xl font-mono text-indigo-600 dark:text-indigo-400 font-semibold h-8 overflow-hidden">
+              <div className="mt-3 flex items-center gap-2 text-base sm:text-xl font-mono text-indigo-600 dark:text-indigo-400 font-semibold min-h-8 overflow-hidden">
                 <span className="text-slate-400 dark:text-slate-500">&gt;</span>
-                <span className="transition-all duration-500 ease-in-out transform">
-                  {currentRoles[roleIndex]}
-                </span>
+                <MorphingText
+                  text={currentRoles}
+                  loop
+                  holdDelay={2800}
+                  className="min-w-0 whitespace-nowrap"
+                />
                 <span className="w-2 h-5 bg-indigo-500 animate-pulse inline-block"></span>
               </div>
             </div>
@@ -100,43 +100,51 @@ export default function Hero({ profile, lang, t }) {
               </div>
 
               {/* Quick Copy Email */}
-              <button
+              <LiquidButton
                 onClick={handleCopyEmail}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg dark:bg-slate-900/60 bg-slate-100 hover:bg-indigo-50 dark:hover:bg-slate-800 dark:border-slate-800 border-slate-200 border text-xs font-mono dark:text-indigo-300 text-indigo-600 transition-all cursor-pointer group"
+                className="h-9 rounded-lg border border-slate-200 px-3 text-xs font-mono text-indigo-600 dark:border-slate-800 dark:text-indigo-300 [--liquid-button-background-color:#f1f5f9] [--liquid-button-color:#6366f1] dark:[--liquid-button-background-color:#0f172a]"
                 title="Click to copy primary email"
               >
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? (lang === 'vi' ? 'Đã sao chép!' : 'Copied!') : profile.emailPrimary}</span>
-              </button>
+              </LiquidButton>
             </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              <a
-                href="#projects"
-                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              <LiquidButton
+                asChild
+                className="h-auto rounded-xl px-6 py-3.5 text-white shadow-lg shadow-indigo-600/30 [--liquid-button-background-color:#BAFF39] [--liquid-button-color:#6E6E6E]"
               >
-                <span>{t.hero.exploreBtn}</span>
-                <ArrowRight className="w-4 h-4" />
-              </a>
+                <a href="#projects">
+                  <span>{t.hero.exploreBtn}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </LiquidButton>
 
-              <a
-                href="#contact"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl dark:bg-slate-800/90 bg-white hover:bg-slate-50 dark:hover:bg-slate-700/80 dark:text-slate-200 text-slate-800 font-semibold text-sm border dark:border-slate-700 border-slate-300 shadow-sm transition-all hover:scale-[1.02]"
+              <LiquidButton
+                asChild
+                className="h-auto rounded-xl border border-slate-300 px-6 py-3.5 text-slate-800 dark:border-slate-700 dark:text-slate-200 [--liquid-button-background-color:#e2e8f0] [--liquid-button-color:#6366f1] dark:[--liquid-button-background-color:#1e293b]"
               >
-                <Mail className="w-4 h-4 text-indigo-500" />
-                <span>{t.hero.contactBtn}</span>
-              </a>
+                <a href="#contact">
+                  <Mail className="w-4 h-4 text-indigo-500" />
+                  <span>{t.hero.contactBtn}</span>
+                </a>
+              </LiquidButton>
 
-              <a
-                href="https://github.com/Wizin25"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-3.5 rounded-xl dark:bg-slate-900/60 bg-white hover:bg-slate-100 dark:hover:bg-slate-800 dark:text-slate-300 text-slate-700 text-sm border dark:border-slate-800 border-slate-200 transition-all shadow-sm"
+              <LiquidButton
+                asChild
+                className="h-auto rounded-xl border border-slate-200 px-4 py-3.5 text-slate-700 dark:border-slate-800 dark:text-slate-300 [--liquid-button-background-color:#f1f5f9] [--liquid-button-color:#6366f1] dark:[--liquid-button-background-color:#0f172a]"
               >
-                <Github className="w-4 h-4" />
-                <span className="font-mono text-xs">@Wizin25</span>
-              </a>
+                <a
+                  href="https://github.com/Wizin25"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Github className="w-4 h-4" />
+                  <span className="font-mono text-xs">@Wizin25</span>
+                </a>
+              </LiquidButton>
             </div>
 
             {/* Core Tech Stack */}
@@ -166,7 +174,7 @@ export default function Hero({ profile, lang, t }) {
               <div className="absolute -inset-1.5 bg-gradient-to-r from-indigo-500 via-purple-600 to-cyan-400 rounded-3xl blur-xl opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
 
               {/* Card Container */}
-              <div className="relative rounded-3xl overflow-hidden dark:bg-[#121829] bg-white border dark:border-slate-700/80 border-slate-200 shadow-2xl p-3">
+              <div className="relative rounded-3xl overflow-hidden dark:bg-[#1a1a1a] bg-white border dark:border-slate-700/80 border-slate-200 shadow-2xl p-3">
                 
                 {/* Photo Frame with Face Focus */}
                 <div className="relative w-full h-[430px] sm:h-[480px] rounded-2xl overflow-hidden bg-slate-950">
@@ -177,7 +185,7 @@ export default function Hero({ profile, lang, t }) {
                   />
                   
                   {/* Subtle Gradient Overlays for Depth */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0d14] via-transparent to-transparent opacity-60"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#101010] via-transparent to-transparent opacity-60"></div>
                   <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-black/40 to-transparent"></div>
                 </div>
 
@@ -198,7 +206,7 @@ export default function Hero({ profile, lang, t }) {
                 </div>
 
                 {/* Floating Badge 3: Bottom Left Project Metric */}
-                <div className="absolute bottom-6 left-6 px-4 py-2 rounded-xl dark:bg-[#0c1222]/95 bg-white/95 backdrop-blur-md border dark:border-purple-500/40 border-purple-200 shadow-xl flex items-center gap-2.5">
+                <div className="absolute bottom-6 left-6 px-4 py-2 rounded-xl dark:bg-[#1a1a1a]/95 bg-white/95 backdrop-blur-md border dark:border-purple-500/40 border-purple-200 shadow-xl flex items-center gap-2.5">
                   <div className="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xs">
                     🚀
                   </div>
@@ -213,7 +221,7 @@ export default function Hero({ profile, lang, t }) {
                 </div>
 
                 {/* Floating Badge 4: Bottom Right Status */}
-                <div className="absolute bottom-6 right-6 px-3.5 py-2 rounded-xl dark:bg-[#0c1222]/95 bg-white/95 backdrop-blur-md border dark:border-emerald-500/40 border-emerald-200 shadow-xl flex items-center gap-2">
+                <div className="absolute bottom-6 right-6 px-3.5 py-2 rounded-xl dark:bg-[#1a1a1a]/95 bg-white/95 backdrop-blur-md border dark:border-emerald-500/40 border-emerald-200 shadow-xl flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                   <span className="text-[11px] font-mono font-semibold dark:text-emerald-300 text-emerald-700">
                     FPTU Graduate
