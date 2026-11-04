@@ -1,6 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Layers, Database, Zap, ShieldCheck, CheckCircle, Code2, Award, Sparkles, Terminal } from 'lucide-react';
 import { SlidingNumber } from '@animate-ui/react/primitives/texts/sliding-number';
+import { motion } from 'motion/react';
+
+function LiquidGlassCard({ className = '', children }) {
+  const [ripple, setRipple] = useState(null);
+
+  const trackPointer = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty('--glass-x', `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty('--glass-y', `${event.clientY - rect.top}px`);
+  };
+
+  const createRipple = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setRipple({ x: event.clientX - rect.left, y: event.clientY - rect.top, id: Date.now() });
+  };
+
+  return (
+    <div onPointerMove={trackPointer} onPointerDown={createRipple} className={`liquid-glass-surface liquid-glass-card relative isolate ${className}`}>
+      {ripple && <motion.span key={ripple.id} className="liquid-glass-ripple" style={{ left: ripple.x, top: ripple.y }} initial={{ opacity: 0.5, scale: 0 }} animate={{ opacity: 0, scale: 7 }} transition={{ duration: 0.8, ease: 'easeOut' }} />}
+      <div className="relative z-10 h-full">{children}</div>
+    </div>
+  );
+}
 
 export default function About({ t }) {
   const icons = [Layers, Database, Zap, ShieldCheck];
@@ -32,9 +55,9 @@ export default function About({ t }) {
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16">
           {stats.map((s, idx) => (
-            <div
+            <LiquidGlassCard
               key={idx}
-              className="glass-card p-4 rounded-2xl text-center hover:-translate-y-1 transition-all duration-300"
+              className="p-4 rounded-2xl text-center hover:-translate-y-1 transition-all duration-300"
             >
               <div className="mb-1 flex items-baseline justify-center font-mono text-2xl font-extrabold text-indigo-500 sm:text-3xl dark:text-indigo-300">
                 {typeof s.value === 'number' ? (
@@ -46,7 +69,7 @@ export default function About({ t }) {
               </div>
               <div className="text-xs font-bold dark:text-white text-slate-900">{s.label}</div>
               <div className="text-[11px] font-mono dark:text-slate-500 text-slate-500">{s.sublabel}</div>
-            </div>
+            </LiquidGlassCard>
           ))}
         </div>
 
@@ -80,16 +103,16 @@ export default function About({ t }) {
             {t.about.cards.map((card, i) => {
               const Icon = icons[i] || Layers;
               return (
-                <div
+                <LiquidGlassCard
                   key={i}
-                  className="glass-card p-5 rounded-2xl hover:-translate-y-1 transition-all duration-300"
+                  className="p-5 rounded-2xl hover:-translate-y-1 transition-all duration-300"
                 >
                   <div className="w-12 h-12 rounded-xl dark:bg-indigo-600/20 bg-indigo-50 border dark:border-indigo-500/30 border-indigo-200 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-4">
                     <Icon className="w-6 h-6" />
                   </div>
                   <h4 className="text-lg font-bold dark:text-white text-slate-900 mb-2">{card.title}</h4>
                   <p className="text-xs dark:text-slate-400 text-slate-600 leading-relaxed">{card.description}</p>
-                </div>
+                </LiquidGlassCard>
               );
             })}
           </div>

@@ -5,6 +5,18 @@ import { Tilt, TiltContent } from '@animate-ui/react/primitives/effects/tilt';
 
 export default function Skills({ skills, t }) {
   const [activeTab, setActiveTab] = useState('frontend');
+  const [ripple, setRipple] = useState(null);
+
+  const trackGlassPointer = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty('--glass-x', `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty('--glass-y', `${event.clientY - rect.top}px`);
+  };
+
+  const rippleGlass = (event, skillName) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setRipple({ x: event.clientX - rect.left, y: event.clientY - rect.top, id: Date.now(), skillName });
+  };
 
   const categories = [
     { key: 'frontend', label: t.skills.tabs.frontend, icon: Layout },
@@ -55,9 +67,11 @@ export default function Skills({ skills, t }) {
           {currentSkills.map((skill, index) => (
             <motion.div key={skill.name} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.22 }}>
             <Tilt maxTilt={5} perspective={900} className="h-full">
-            <TiltContent className={`h-full p-4 rounded-2xl glass-card transition-colors duration-300 hover:border-indigo-500/50 relative overflow-hidden group ${skill.highlight ? 'ring-1 ring-indigo-500/30' : ''}`}>
+            <TiltContent onPointerMove={trackGlassPointer} onPointerDown={(event) => rippleGlass(event, skill.name)} className={`liquid-glass-surface liquid-glass-card h-full p-4 rounded-2xl transition-colors duration-300 hover:border-indigo-500/50 relative overflow-hidden group ${skill.highlight ? 'ring-1 ring-indigo-500/30' : ''}`}>
+              <div className="relative z-10">
+              {ripple?.skillName === skill.name && <motion.span key={ripple.id} className="liquid-glass-ripple" style={{ left: ripple.x, top: ripple.y }} initial={{ opacity: 0.5, scale: 0 }} animate={{ opacity: 0, scale: 7 }} transition={{ duration: 0.8, ease: 'easeOut' }} />}
               {skill.highlight && (
-                <div className="absolute top-3 right-3 flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full dark:bg-indigo-500/20 bg-indigo-50 dark:text-indigo-300 text-indigo-700 border dark:border-indigo-500/30 border-indigo-200">
+                <div className="mb-3 flex w-fit items-center gap-1 text-[10px] font-mono font-semibold px-2 py-1 rounded-full dark:bg-indigo-500/20 bg-indigo-50 dark:text-indigo-300 text-indigo-700 border dark:border-indigo-500/30 border-indigo-200">
                   <Sparkles className="w-2.5 h-2.5" />
                   <span>{t.skills.keyStrength}</span>
                 </div>
@@ -86,6 +100,7 @@ export default function Skills({ skills, t }) {
                     className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000 ease-out"
                   />
                 </div>
+              </div>
               </div>
             </TiltContent>
             </Tilt>

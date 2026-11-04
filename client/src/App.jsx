@@ -9,7 +9,7 @@ import Experience from './components/Experience';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import { portfolioData } from './data/portfolioData';
-import { GlyphBackground } from './components/animate-ui/backgrounds/glyph';
+import { TopographyBackground } from './components/animate-ui/backgrounds/topography';
 import { AnimatePresence } from 'motion/react';
 
 export default function App() {
@@ -68,12 +68,21 @@ export default function App() {
 
   return (
     <div className="relative isolate min-h-screen">
-      <GlyphBackground
-        className="pointer-events-none fixed inset-0 z-0 bg-white text-indigo-400 dark:bg-[#101010] dark:text-indigo-300"
-        glowColor="#BAFF39"
-        shapeColor="#BAFF39"
-        fontSize={14}
+      <svg aria-hidden="true" className="pointer-events-none absolute h-0 w-0 overflow-hidden">
+        <filter id="nav-liquid-glass-refraction" x="-12%" y="-18%" width="124%" height="136%" colorInterpolationFilters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.018 0.026" numOctaves="2" seed="14" result="glass-noise" />
+          <feDisplacementMap in="SourceGraphic" in2="glass-noise" scale="8" xChannelSelector="R" yChannelSelector="G" result="glass-bend" />
+          <feGaussianBlur in="glass-bend" stdDeviation="1.2" />
+        </filter>
+      </svg>
+      <TopographyBackground
+        className="fixed inset-0 z-0 bg-white text-[#6E6E6E] opacity-40 dark:bg-[#101010] dark:text-[#BAFF39]"
+        levels={14}
+        speed={0.24}
+        scale={0.75}
+        peak={0.65}
         interactive
+        globalInteractive
       />
       <div className="relative z-10 flex min-h-screen flex-col justify-between text-slate-800 transition-colors duration-300 dark:text-white">
       <Navbar 

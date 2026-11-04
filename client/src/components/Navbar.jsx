@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from 'motion/react';
 export default function Navbar({ serverStatus, lang, onToggleLang, theme, setTheme, t }) {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('about');
+  const [glassRipple, setGlassRipple] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,6 +37,17 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, setThe
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, [lang]);
+
+  const trackGlassPointer = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty('--glass-x', `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty('--glass-y', `${event.clientY - rect.top}px`);
+  };
+
+  const rippleGlass = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setGlassRipple({ x: event.clientX - rect.left, y: event.clientY - rect.top, id: Date.now() });
+  };
 
   return (
     <>
@@ -71,10 +83,11 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, setThe
           </a>
 
           {/* Desktop Navigation */}
-          <nav aria-label="Main navigation" className="hidden lg:flex items-center gap-1 rounded-2xl border border-black/[0.06] bg-white/55 p-1.5 shadow-sm backdrop-blur-xl dark:border-white/[0.08] dark:bg-white/[0.035]">
+          <nav aria-label="Main navigation" onPointerMove={trackGlassPointer} onPointerDown={rippleGlass} className="liquid-glass-surface relative isolate hidden items-center gap-1 rounded-2xl p-1.5 shadow-sm lg:flex">
+            {glassRipple && <motion.span key={glassRipple.id} className="liquid-glass-ripple" style={{ left: glassRipple.x, top: glassRipple.y }} initial={{ opacity: 0.5, scale: 0 }} animate={{ opacity: 0, scale: 7 }} transition={{ duration: 0.8, ease: 'easeOut' }} />}
             {navLinks.map(({ name, href, id }) => (
               <a key={id} href={href} onClick={() => setActiveSection(id)} aria-current={activeSection === id ? 'location' : undefined}
-                className={`relative isolate rounded-xl px-3.5 py-2 text-[13px] font-medium transition-colors duration-200 ${activeSection === id ? 'text-[#20250f] dark:text-[#d8ff8c]' : 'text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'}`}>
+                className={`relative z-10 isolate rounded-xl px-3.5 py-2 text-[13px] font-medium transition-colors duration-200 ${activeSection === id ? 'text-[#20250f] dark:text-[#d8ff8c]' : 'text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'}`}>
                 {activeSection === id && <motion.span layoutId="orbit-nav-active" className="absolute inset-0 -z-10 rounded-xl border border-[#baff39]/50 bg-[#baff39]/15 shadow-[0_0_22px_rgba(186,255,57,0.13)] dark:bg-[#baff39]/10" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
                 {name}
               </a>
@@ -137,7 +150,8 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, setThe
 
     </header>
     <nav aria-label="Mobile navigation" className="fixed inset-x-4 bottom-3 z-[60] lg:hidden">
-      <div className="mx-auto flex max-w-md items-center justify-around rounded-2xl border border-black/10 bg-white/80 p-1.5 shadow-[0_12px_45px_rgba(0,0,0,0.18)] backdrop-blur-2xl dark:border-white/10 dark:bg-[#171717]/85 dark:shadow-black/50">
+      <div onPointerMove={trackGlassPointer} onPointerDown={rippleGlass} className="liquid-glass-surface relative isolate mx-auto flex max-w-md items-center justify-around rounded-2xl p-1.5 shadow-[0_12px_45px_rgba(0,0,0,0.18)] dark:shadow-black/50">
+        {glassRipple && <motion.span key={`mobile-${glassRipple.id}`} className="liquid-glass-ripple" style={{ left: glassRipple.x, top: glassRipple.y }} initial={{ opacity: 0.5, scale: 0 }} animate={{ opacity: 0, scale: 7 }} transition={{ duration: 0.8, ease: 'easeOut' }} />}
         {navLinks.map(({ name, href, id, Icon }) => (
           <a key={id} href={href} onClick={() => setActiveSection(id)} aria-label={name} aria-current={activeSection === id ? 'location' : undefined}
             className={`relative isolate flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl py-2 transition-colors ${activeSection === id ? 'text-[#252b14] dark:text-[#d8ff8c]' : 'text-slate-500 dark:text-slate-400'}`}>
