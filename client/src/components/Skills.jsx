@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Layout, Server, Database, Wrench, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Tilt, TiltContent } from '@animate-ui/react/primitives/effects/tilt';
+import { trackPortfolioEvent } from '../analytics.js';
 
 export default function Skills({ skills, t }) {
   const [activeTab, setActiveTab] = useState('frontend');
@@ -50,7 +51,12 @@ export default function Skills({ skills, t }) {
             return (
               <button
                 key={cat.key}
-                onClick={() => setActiveTab(cat.key)}
+                onClick={() => {
+                  if (activeTab !== cat.key) {
+                    trackPortfolioEvent('skills_category_select', { category: cat.key });
+                    setActiveTab(cat.key);
+                  }
+                }}
                 className={`relative isolate flex items-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors ${isActive ? 'border-transparent text-white' : 'dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-300 border-slate-200 bg-slate-100/80 text-slate-700 hover:text-indigo-600'}`}
               >
                 {isActive && <motion.span layoutId="skills-active-pill" className="absolute inset-0 -z-10 rounded-xl bg-indigo-600 shadow-lg shadow-indigo-600/25" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}

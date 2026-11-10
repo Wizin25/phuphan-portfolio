@@ -7,6 +7,7 @@ import Projects from './components/Projects';
 import ProjectModal from './components/ProjectModal';
 import Experience from './components/Experience';
 import Contact from './components/Contact';
+import PublicAnalytics from './components/PublicAnalytics';
 import Footer from './components/Footer';
 import { portfolioData } from './data/portfolioData';
 import { TopographyBackground } from './components/animate-ui/backgrounds/topography';
@@ -122,6 +123,7 @@ export default function App() {
           lang={lang}
           t={t} 
         />
+        <PublicAnalytics lang={lang} />
       </main>
 
       <Footer 

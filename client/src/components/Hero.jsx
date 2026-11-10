@@ -3,6 +3,7 @@ import { ArrowRight, Github, Mail, Sparkles, MapPin, Check, Copy, Terminal, Shie
 import { HighlightText } from '@animate-ui/react/primitives/texts/highlight';
 import { MorphingText } from '@animate-ui/react/primitives/texts/morphing';
 import { LiquidButton } from './animate-ui/buttons/liquid';
+import { trackPortfolioEvent } from '../analytics.js';
 
 export default function Hero({ profile, lang, t }) {
   const [copied, setCopied] = useState(false);
@@ -24,6 +25,7 @@ export default function Hero({ profile, lang, t }) {
   const currentRoles = lang === 'vi' ? rolesVi : rolesEn;
 
   const handleCopyEmail = () => {
+    trackPortfolioEvent('contact_click', { type: 'copy_email' });
     navigator.clipboard.writeText(profile.emailPrimary);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -126,7 +128,7 @@ export default function Hero({ profile, lang, t }) {
                 asChild
                 className="h-auto rounded-xl border border-slate-300 px-6 py-3.5 text-slate-800 dark:border-slate-700 dark:text-slate-200 [--liquid-button-background-color:#e2e8f0] [--liquid-button-color:#6366f1] dark:[--liquid-button-background-color:#1e293b]"
               >
-                <a href="#contact">
+                <a href="#contact" onClick={() => trackPortfolioEvent('contact_click', { type: 'contact_cta' })}>
                   <Mail className="w-4 h-4 text-indigo-500" />
                   <span>{t.hero.contactBtn}</span>
                 </a>
@@ -138,6 +140,7 @@ export default function Hero({ profile, lang, t }) {
               >
                 <a
                   href="https://github.com/Wizin25"
+                  onClick={() => trackPortfolioEvent('contact_click', { type: 'github' })}
                   target="_blank"
                   rel="noreferrer"
                 >

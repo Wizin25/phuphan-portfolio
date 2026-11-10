@@ -1,6 +1,7 @@
 import React from 'react';
 import { Terminal, Github, Mail, ArrowUp } from 'lucide-react';
 import { LiquidButton } from './animate-ui/buttons/liquid';
+import { trackPortfolioEvent } from '../analytics.js';
 
 export default function Footer({ profile, t }) {
   const scrollToTop = () => {
@@ -26,6 +27,7 @@ export default function Footer({ profile, t }) {
           <div className="flex items-center gap-4">
             <a
               href="https://github.com/Wizin25"
+              onClick={() => trackPortfolioEvent('contact_click', { type: 'github' })}
               target="_blank"
               rel="noreferrer"
               className="p-2 rounded-lg dark:bg-slate-900 bg-white hover:bg-slate-200 dark:hover:bg-slate-800 dark:text-slate-300 text-slate-700 transition-colors border dark:border-slate-800 border-slate-200"
@@ -35,6 +37,7 @@ export default function Footer({ profile, t }) {
             </a>
             <a
               href={`mailto:${profile.emailPrimary}`}
+              onClick={() => trackPortfolioEvent('contact_click', { type: 'primary_email' })}
               className="p-2 rounded-lg dark:bg-slate-900 bg-white hover:bg-slate-200 dark:hover:bg-slate-800 dark:text-slate-300 text-slate-700 transition-colors border dark:border-slate-800 border-slate-200"
               title={profile.emailPrimary}
             >

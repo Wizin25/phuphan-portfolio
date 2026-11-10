@@ -1,52 +1,66 @@
-const pendingClicks = [];
+const pendingEvents = [];
 let initialized = false;
 let scriptFailed = false;
 const defaultWebsiteId = '91a35de1-811b-414b-a73d-3e0396a33633';
 
-const getClickLabel = (element) => {
-  const rawLabel = element.getAttribute('aria-label')
-    || element.getAttribute('title')
-    || element.textContent
-    || (element.matches('input') ? element.getAttribute('value') : '')
-    || '';
-  const label = rawLabel
-    .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[redacted]')
-    .replace(/\b\+?\d[\d\s().-]{7,}\d\b/g, '[redacted]')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 100);
-
-  return label || (element.matches('a, [role="link"]') ? 'link' : 'button');
+const allowedEventData = {
+  project_open: {
+    project: new Set([
+      'swapx-ev-bss',
+      'remakers-studio',
+      'cat-dog-platform',
+      'perfume-store-mobile',
+      'sap-erp-abap',
+      'python-automation-scraper',
+    ]),
+  },
+  skills_category_select: {
+    category: new Set(['frontend', 'backend', 'database', 'enterpriseAndTools']),
+  },
+  contact_click: {
+    type: new Set([
+      'primary_email',
+      'secondary_email',
+      'github',
+      'copy_email',
+      'contact_cta',
+    ]),
+  },
+  contact_form_success: null,
 };
 
-const sendClick = ({ label, element }) => {
-  if (typeof window.umami?.track === 'function') {
-    window.umami.track('click', { label, element });
-  } else if (!scriptFailed && pendingClicks.length < 50) {
-    pendingClicks.push({ label, element });
-  }
-};
+const sanitizeEventData = (eventName, data) => {
+  if (!Object.hasOwn(allowedEventData, eventName)) return null;
+  const allowedProperties = allowedEventData[eventName];
+  if (allowedProperties === null) return {};
+  if (!data || typeof data !== 'object') return null;
 
-const handleClick = (event) => {
-  const target = event.target instanceof Element ? event.target : event.target?.parentElement;
-  const control = target?.closest(
-    'a, button, [role="link"], [role="button"], input[type="button"], input[type="submit"], input[type="reset"]'
-  );
-  if (!control) return;
-
-  sendClick({
-    label: getClickLabel(control),
-    element: control.matches('a, [role="link"]') ? 'link' : 'button',
+  const safeData = {};
+  Object.entries(allowedProperties).forEach(([key, allowedValues]) => {
+    if (allowedValues.has(data[key])) safeData[key] = data[key];
   });
+
+  return Object.keys(safeData).length ? safeData : null;
 };
 
-export function initializeClickAnalytics() {
+export function trackPortfolioEvent(eventName, data) {
+  const safeData = sanitizeEventData(eventName, data);
+  if (safeData === null) return;
+
+  const event = { eventName, data: safeData };
+  if (typeof window.umami?.track === 'function') {
+    if (Object.keys(event.data).length) window.umami.track(event.eventName, event.data);
+    else window.umami.track(event.eventName);
+  } else if (!scriptFailed && pendingEvents.length < 50) {
+    pendingEvents.push(event);
+  }
+}
+
+export function initializeUmamiAnalytics() {
   if (initialized) return;
   initialized = true;
 
   const websiteId = import.meta.env.VITE_UMAMI_WEBSITE_ID?.trim() || defaultWebsiteId;
-
-  document.addEventListener('click', handleClick);
 
   const script = document.createElement('script');
   script.defer = true;
@@ -59,18 +73,19 @@ export function initializeClickAnalytics() {
   script.addEventListener('load', () => {
     if (typeof window.umami?.track !== 'function') {
       scriptFailed = true;
-      pendingClicks.length = 0;
+      pendingEvents.length = 0;
       return;
     }
 
     window.umami.track();
-    pendingClicks.splice(0).forEach(({ label, element }) => {
-      window.umami.track('click', { label, element });
+    pendingEvents.splice(0).forEach(({ eventName, data }) => {
+      if (Object.keys(data).length) window.umami.track(eventName, data);
+      else window.umami.track(eventName);
     });
   }, { once: true });
   script.addEventListener('error', () => {
     scriptFailed = true;
-    pendingClicks.length = 0;
+    pendingEvents.length = 0;
   }, { once: true });
   document.head.appendChild(script);
 }

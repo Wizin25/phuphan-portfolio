@@ -90,9 +90,11 @@ npm start
 
 ## 📊 Click Analytics (Umami)
 
-The client sends one pageview when the portfolio loads, plus click events for links and buttons, to Umami Cloud. Umami's dashboard reports visits and estimated unique visitors as well as clicks; it does not identify visitors by name. The provided Umami Website ID is configured as the default. To use a different website, override it with `VITE_UMAMI_WEBSITE_ID` in `client/.env.local` for local development or in the deployment platform's client build environment. See `client/.env.example`. The ID is public client-side configuration, not a secret.
+The client sends one pageview when the portfolio loads and a small set of named events to Umami Cloud: project opens, skills category changes, and contact actions. Event properties use fixed project IDs, skill category keys, and contact action types; visible labels, email addresses, phone numbers, and form contents are not sent. The provided Umami Website ID is configured as the default. To use a different website, override it with `VITE_UMAMI_WEBSITE_ID` in `client/.env.local` for local development or in the deployment platform's client build environment. See `client/.env.example`. The ID is public client-side configuration, not a secret.
 
-Automatic tracking is disabled so pageviews and clicks are each recorded once. Click events include the control type and a shortened accessible/text label; email addresses and phone-like strings are redacted. URL search parameters and fragments are excluded. Umami's Do Not Track option is enabled.
+Automatic tracking is disabled so the initial pageview is sent once and only selected events are recorded. URL search parameters and fragments are excluded. Umami's Do Not Track option is enabled and respects the browser's DNT signal when available.
+
+The public analytics section requests aggregate data from a server endpoint using the Umami Share URL's scoped read-only token. It shows visitors, visits, pageviews, and selected portfolio events for the last 30 days, cached for five minutes. It does not expose the Umami token or collect visitor-level details in the portfolio UI. Update the share slug in `server/index.js` and the dashboard link in `client/src/components/PublicAnalytics.jsx` if the Share URL changes.
 
 ---
 

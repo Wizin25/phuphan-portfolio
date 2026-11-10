@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ExternalLink, Github, ArrowUpRight, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { LiquidButton } from './animate-ui/buttons/liquid';
+import { trackPortfolioEvent } from '../analytics.js';
 
 export default function Projects({ projects, onSelectProject, lang, t }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -10,6 +11,11 @@ export default function Projects({ projects, onSelectProject, lang, t }) {
     if (selectedCategory === 'All') return true;
     return p.category.toLowerCase().includes(selectedCategory.toLowerCase());
   });
+
+  const openProject = (project) => {
+    trackPortfolioEvent('project_open', { project: project.id });
+    onSelectProject(project);
+  };
 
   return (
     <section id="projects" className="py-20 relative border-t dark:border-slate-900 border-slate-200 dark:bg-[#101010]/25 bg-white/30">
@@ -78,7 +84,7 @@ export default function Projects({ projects, onSelectProject, lang, t }) {
 
                   <h3 className="mb-2">
                     <LiquidButton
-                      onClick={() => onSelectProject(project)}
+                      onClick={() => openProject(project)}
                       className="h-auto w-full justify-between rounded-lg p-0 text-left text-xl font-bold text-slate-900 dark:text-white [--liquid-button-background-color:transparent] [--liquid-button-color:#312e81] dark:[--liquid-button-color:#818cf8]"
                     >
                       <span>{title}</span>
@@ -115,7 +121,7 @@ export default function Projects({ projects, onSelectProject, lang, t }) {
                 {/* Card Footer Actions */}
                 <div className="px-5 py-3 dark:bg-slate-950/25 bg-slate-50/60 border-t dark:border-slate-800/60 border-slate-200/70 flex items-center justify-between">
                   <LiquidButton
-                    onClick={() => onSelectProject(project)}
+                    onClick={() => openProject(project)}
                     className="h-8 rounded-md px-2 text-xs font-semibold text-indigo-600 dark:text-indigo-400 [--liquid-button-background-color:#eef2ff] [--liquid-button-color:#6366f1] dark:[--liquid-button-background-color:#1e293b]"
                   >
                     {t.projects.viewDetails}

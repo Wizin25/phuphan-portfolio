@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, MapPin, Github, Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { LiquidButton } from './animate-ui/buttons/liquid';
+import { trackPortfolioEvent } from '../analytics.js';
 
 export default function Contact({ profile, lang, t }) {
   const [formData, setFormData] = useState({
@@ -33,6 +34,7 @@ export default function Contact({ profile, lang, t }) {
       const data = await response.json();
 
       if (response.ok && data.success) {
+        trackPortfolioEvent('contact_form_success');
         setStatus({
           type: 'success',
           text: t.contact.successMsg
@@ -85,12 +87,14 @@ export default function Contact({ profile, lang, t }) {
                   <div className="space-y-1 mt-1">
                     <a
                       href={`mailto:${profile.emailPrimary}`}
+                      onClick={() => trackPortfolioEvent('contact_click', { type: 'primary_email' })}
                       className="dark:text-white text-slate-900 hover:text-indigo-600 font-medium text-sm transition-colors block"
                     >
                       {profile.emailPrimary} <span className="text-xs text-indigo-500 font-mono">(Primary)</span>
                     </a>
                     <a
                       href={`mailto:${profile.emailSecondary}`}
+                      onClick={() => trackPortfolioEvent('contact_click', { type: 'secondary_email' })}
                       className="dark:text-slate-300 text-slate-700 hover:text-indigo-600 font-medium text-xs transition-colors block font-mono"
                     >
                       {profile.emailSecondary}
@@ -107,6 +111,7 @@ export default function Contact({ profile, lang, t }) {
                   <span className="text-xs font-mono dark:text-slate-400 text-slate-500 block">{t.contact.githubLabel}</span>
                   <a
                     href="https://github.com/Wizin25"
+                    onClick={() => trackPortfolioEvent('contact_click', { type: 'github' })}
                     target="_blank"
                     rel="noreferrer"
                     className="dark:text-white text-slate-900 hover:text-indigo-600 font-medium text-sm transition-colors mt-1 block font-mono"

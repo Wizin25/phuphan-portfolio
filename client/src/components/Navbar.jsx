@@ -4,6 +4,7 @@ import { ShimmeringText } from '@animate-ui/react/primitives/texts/shimmering';
 import { ThemeToggler } from '@animate-ui/react/primitives/effects/theme-toggler';
 import { LiquidButton } from './animate-ui/buttons/liquid';
 import { AnimatePresence, motion } from 'motion/react';
+import { trackPortfolioEvent } from '../analytics.js';
 
 export default function Navbar({ serverStatus, lang, onToggleLang, theme, setTheme, t }) {
   const [scrolled, setScrolled] = useState(false);
@@ -86,7 +87,10 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, setThe
           <nav aria-label="Main navigation" onPointerMove={trackGlassPointer} onPointerDown={rippleGlass} className="liquid-glass-surface relative isolate hidden items-center gap-1 rounded-2xl p-1.5 shadow-sm lg:flex">
             {glassRipple && <motion.span key={glassRipple.id} className="liquid-glass-ripple" style={{ left: glassRipple.x, top: glassRipple.y }} initial={{ opacity: 0.5, scale: 0 }} animate={{ opacity: 0, scale: 7 }} transition={{ duration: 0.8, ease: 'easeOut' }} />}
             {navLinks.map(({ name, href, id }) => (
-              <a key={id} href={href} onClick={() => setActiveSection(id)} aria-current={activeSection === id ? 'location' : undefined}
+              <a key={id} href={href} onClick={() => {
+                setActiveSection(id);
+                if (id === 'contact') trackPortfolioEvent('contact_click', { type: 'contact_cta' });
+              }} aria-current={activeSection === id ? 'location' : undefined}
                 className={`relative z-10 isolate rounded-xl px-3.5 py-2 text-[13px] font-medium transition-colors duration-200 ${activeSection === id ? 'text-[#20250f] dark:text-[#d8ff8c]' : 'text-slate-600 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white'}`}>
                 {activeSection === id && <motion.span layoutId="orbit-nav-active" className="absolute inset-0 -z-10 rounded-xl border border-[#baff39]/50 bg-[#baff39]/15 shadow-[0_0_22px_rgba(186,255,57,0.13)] dark:bg-[#baff39]/10" transition={{ type: 'spring', stiffness: 380, damping: 32 }} />}
                 {name}
@@ -124,6 +128,7 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, setThe
             {/* GitHub */}
             <a
               href="https://github.com/Wizin25"
+              onClick={() => trackPortfolioEvent('contact_click', { type: 'github' })}
               target="_blank"
               rel="noreferrer"
               className="hidden sm:flex p-2 rounded-xl dark:bg-slate-800/60 bg-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 dark:hover:text-white border dark:border-slate-700/50 border-slate-200 transition-all hover:scale-105"
@@ -139,6 +144,7 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, setThe
             >
             <a
               href="#contact"
+              onClick={() => trackPortfolioEvent('contact_click', { type: 'contact_cta' })}
             >
               {t.nav.contactMe}
             </a>
@@ -153,7 +159,10 @@ export default function Navbar({ serverStatus, lang, onToggleLang, theme, setThe
       <div onPointerMove={trackGlassPointer} onPointerDown={rippleGlass} className="liquid-glass-surface relative isolate mx-auto flex max-w-md items-center justify-around rounded-2xl p-1.5 shadow-[0_12px_45px_rgba(0,0,0,0.18)] dark:shadow-black/50">
         {glassRipple && <motion.span key={`mobile-${glassRipple.id}`} className="liquid-glass-ripple" style={{ left: glassRipple.x, top: glassRipple.y }} initial={{ opacity: 0.5, scale: 0 }} animate={{ opacity: 0, scale: 7 }} transition={{ duration: 0.8, ease: 'easeOut' }} />}
         {navLinks.map(({ name, href, id, Icon }) => (
-          <a key={id} href={href} onClick={() => setActiveSection(id)} aria-label={name} aria-current={activeSection === id ? 'location' : undefined}
+          <a key={id} href={href} onClick={() => {
+            setActiveSection(id);
+            if (id === 'contact') trackPortfolioEvent('contact_click', { type: 'contact_cta' });
+          }} aria-label={name} aria-current={activeSection === id ? 'location' : undefined}
             className={`relative isolate flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl py-2 transition-colors ${activeSection === id ? 'text-[#252b14] dark:text-[#d8ff8c]' : 'text-slate-500 dark:text-slate-400'}`}>
             {activeSection === id && <motion.span layoutId="orbit-mobile-active" className="absolute inset-0 -z-10 rounded-xl bg-[#baff39]/45 dark:bg-[#baff39]/15" transition={{ type: 'spring', stiffness: 400, damping: 30 }} />}
             <Icon className={`h-[18px] w-[18px] transition-transform ${activeSection === id ? 'scale-110' : ''}`} strokeWidth={activeSection === id ? 2.4 : 1.8} />

@@ -10,6 +10,15 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const umamiApiBaseUrl = 'https://cloud.umami.is/analytics/us/api';
+const umamiShareSlug = 'GUgusTJJmAWUaH8A';
+const publicEventNames = [
+  'project_open',
+  'skills_category_select',
+  'contact_click',
+  'contact_form_success'
+];
+let publicAnalyticsCache = { expiresAt: 0, data: null };
 
 // Middleware
 app.use(cors());
@@ -67,6 +76,66 @@ app.get('/api/projects/:id', (req, res) => {
 
 app.get('/api/skills', (req, res) => {
   res.json(portfolioData.skills);
+});
+
+app.get('/api/public-analytics', async (req, res) => {
+  if (publicAnalyticsCache.data && publicAnalyticsCache.expiresAt > Date.now()) {
+    res.set('Cache-Control', 'public, max-age=300');
+    return res.json(publicAnalyticsCache.data);
+  }
+
+  try {
+    const shareResponse = await fetch(`${umamiApiBaseUrl}/share/${umamiShareSlug}`, {
+      signal: AbortSignal.timeout(8000)
+    });
+    if (!shareResponse.ok) throw new Error(`Share endpoint returned ${shareResponse.status}`);
+
+    const share = await shareResponse.json();
+    if (!share.websiteId || !share.token || !share.shareType) {
+      throw new Error('Share response is missing its public access details');
+    }
+
+    const headers = {
+      Authorization: `Bearer ${share.token}`,
+      'x-umami-share-token': share.token,
+      'x-umami-share-context': String(share.shareType)
+    };
+    const query = new URLSearchParams({ period: '30d', timezone: 'Asia/Ho_Chi_Minh' });
+    const [statsResponse, eventsResponse] = await Promise.all([
+      fetch(`${umamiApiBaseUrl}/websites/${encodeURIComponent(share.websiteId)}/stats?${query}`, {
+        headers,
+        signal: AbortSignal.timeout(8000)
+      }),
+      fetch(`${umamiApiBaseUrl}/websites/${encodeURIComponent(share.websiteId)}/events/series?${query}&unit=day&limit=100`, {
+        headers,
+        signal: AbortSignal.timeout(8000)
+      })
+    ]);
+    if (!statsResponse.ok || !eventsResponse.ok) {
+      throw new Error(`Analytics endpoints returned ${statsResponse.status}/${eventsResponse.status}`);
+    }
+
+    const [stats, eventSeries] = await Promise.all([statsResponse.json(), eventsResponse.json()]);
+    const events = Object.fromEntries(publicEventNames.map((name) => [name, 0]));
+    (Array.isArray(eventSeries) ? eventSeries : []).forEach((point) => {
+      if (Object.hasOwn(events, point.x)) events[point.x] += Number(point.y) || 0;
+    });
+
+    const result = {
+      period: '30d',
+      visitors: Number(stats.visitors) || 0,
+      visits: Number(stats.visits) || 0,
+      pageviews: Number(stats.pageviews) || 0,
+      events
+    };
+
+    publicAnalyticsCache = { data: result, expiresAt: Date.now() + 5 * 60 * 1000 };
+    res.set('Cache-Control', 'public, max-age=300');
+    return res.json(result);
+  } catch (error) {
+    console.error('[Umami public analytics] Request failed:', error.message);
+    return res.status(502).json({ error: 'Public analytics are temporarily unavailable.' });
+  }
 });
 
 app.post('/api/contact', (req, res) => {
