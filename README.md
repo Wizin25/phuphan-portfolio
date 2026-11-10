@@ -88,6 +88,12 @@ npm start
 ```
 *(Open browser at `http://localhost:5000`)*
 
+## 📊 Click Analytics (Umami)
+
+The client sends one pageview when the portfolio loads, plus click events for links and buttons, to Umami Cloud. Umami's dashboard reports visits and estimated unique visitors as well as clicks; it does not identify visitors by name. The provided Umami Website ID is configured as the default. To use a different website, override it with `VITE_UMAMI_WEBSITE_ID` in `client/.env.local` for local development or in the deployment platform's client build environment. See `client/.env.example`. The ID is public client-side configuration, not a secret.
+
+Automatic tracking is disabled so pageviews and clicks are each recorded once. Click events include the control type and a shortened accessible/text label; email addresses and phone-like strings are redacted. URL search parameters and fragments are excluded. Umami's Do Not Track option is enabled.
+
 ---
 
 ## 📬 Contact API Endpoints
